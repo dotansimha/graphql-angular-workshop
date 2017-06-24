@@ -1,0 +1,20 @@
+{
+  "name": "graphql-angular-workshop",
+  "description": "GraphQL and Angular 2 workshop",
+  "scripts": {
+    "server": "cd server && yarn watch",
+    "web": "cd client && ng server --open",
+    "start": "concurrently \"yarn web\" \"yarn server\"",
+    "postinstall": "(cd client && yarn) && (cd server && yarn)"
+  },
+  "keywords": [],
+  "author": "Dotan Simha",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dotansimha/graphql-angular-workshop/issues"
+  },
+  "homepage": "https://github.com/dotansimha/graphql-angular-workshop#readme",
+  "devDependencies": {
+    "concurrently": "^3.1.0"
+  }
+}
