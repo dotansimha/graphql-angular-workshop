@@ -6,12 +6,14 @@ import { FollowListItemComponent } from './follow-list-item/follow-list-item.com
 import { FollowListComponent } from './follow-list/follow-list.component';
 import { ApolloModule } from 'apollo-angular';
 import { provideClient } from './apollo/client';
+import { FollowUserFormComponent } from './follow-user-form/follow-user-form.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     FollowListItemComponent,
-    FollowListComponent
+    FollowListComponent,
+    FollowUserFormComponent
   ],
   imports: [
     BrowserModule,
