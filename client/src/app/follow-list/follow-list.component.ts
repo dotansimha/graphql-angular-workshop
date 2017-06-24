@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-follow-list',
@@ -6,10 +7,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./follow-list.component.css']
 })
 export class FollowListComponent implements OnInit {
+  private items$: Observable<any>;
 
   constructor() { }
 
   ngOnInit() {
+    this.items$ = Observable.of([
+      {
+        name: 'Dotan',
+        login: 'dotansimha',
+      },
+    ]);
   }
-
 }

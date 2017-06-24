@@ -1,3 +1,3 @@
-<p>
-  follow-list works!
-</p>
+<ul>
+  <app-follow-list-item *ngFor="let item of items$ | async" [user]="item"></app-follow-list-item>
+</ul>
