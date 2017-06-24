@@ -1,10 +1,11 @@
 import gql from 'graphql-tag';
 
 export const MeQuery = gql`
-  query Me {
+  query Me($page: Int!, $perPage: Int!) {
     me {
       id
-      following {
+      followingCount
+      following(page: $page, perPage: $perPage) {
         name
         login
       }
