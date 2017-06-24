@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Apollo } from 'apollo-angular';
+import { MeQuery } from '../graphql/me.query';
+import 'rxjs/add/operator/map';
 
 @Component({
   selector: 'app-follow-list',
@@ -9,14 +12,12 @@ import { Observable } from 'rxjs';
 export class FollowListComponent implements OnInit {
   private items$: Observable<any>;
 
-  constructor() { }
+  constructor(private apollo: Apollo) {
+  }
 
   ngOnInit() {
-    this.items$ = Observable.of([
-      {
-        name: 'Dotan',
-        login: 'dotansimha',
-      },
-    ]);
+    this.items$ = this.apollo.watchQuery<any>({
+      query: MeQuery,
+    }).map(({ data }) => data.me);
   }
 }
