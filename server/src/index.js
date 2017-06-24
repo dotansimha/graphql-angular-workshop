@@ -6,6 +6,9 @@ const { graphqlExpress, graphiqlExpress } = require('graphql-server-express');
 
 const { Schema } = require('./schema');
 
+const GITHUB_LOGIN = '';
+const GITHUB_ACCESS_TOKEN = '';
+
 const app = express();
 
 app.use(cors());
