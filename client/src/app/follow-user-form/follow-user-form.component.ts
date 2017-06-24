@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Apollo } from 'apollo-angular';
+import { FollowMutation } from '../graphql/follow.mutation';
 
 @Component({
   selector: 'app-follow-user-form',
@@ -7,13 +9,29 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FollowUserFormComponent implements OnInit {
   private usernameToFollow: string = '';
+  private followResultMessage: string = '';
 
-  constructor() { }
+  constructor(private apollo: Apollo) {
+  }
 
   ngOnInit() {
   }
 
   follow() {
+    if (this.usernameToFollow === '') {
+      return;
+    }
 
+    this.apollo.mutate<any>({
+      mutation: FollowMutation,
+      variables: {
+        login: this.usernameToFollow,
+      },
+    }).subscribe(({ data: { follow } }) => {
+      const { name, login } = follow;
+
+      this.followResultMessage = `You are now following ${login}${name ? ` (${name})` : ''}!`;
+      this.usernameToFollow = '';
+    });
   }
 }
