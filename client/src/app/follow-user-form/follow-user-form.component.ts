@@ -37,8 +37,12 @@ export class FollowUserFormComponent implements OnInit {
         },
       },
       updateQueries: {
-        Me: (prev, { mutationResult }: { mutationResult: any }) => {
+        Me: (prev: any, { mutationResult }: { mutationResult: any }) => {
           const result = mutationResult.data.follow;
+
+          if (prev.me.following && prev.me.following.find(followingUser => followingUser.login === result.login)) {
+            return prev;
+          }
 
           return update(prev, {
             me: {
