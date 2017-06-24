@@ -1,3 +1,4 @@
 <ul>
   <app-follow-list-item *ngFor="let item of (items$ | async)?.following" [user]="item"></app-follow-list-item>
 </ul>
+<button *ngIf="hasMoreToLoad" (click)="loadMore()">load more</button>
