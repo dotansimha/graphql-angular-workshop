@@ -6,10 +6,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./follow-user-form.component.css']
 })
 export class FollowUserFormComponent implements OnInit {
+  private usernameToFollow: string = '';
 
   constructor() { }
 
   ngOnInit() {
   }
 
+  follow() {
+
+  }
 }
