@@ -1,0 +1,105 @@
+In this step we will create Angular 2 application using `@angular/cli`, and we will connect it to our server.
+
+Let's start by installing the required dependencies:
+
+    $ yarn global add @angular/cli
+    // Or, with npm:
+    $ npm install -g @angular/cli
+
+### Create Angular 2 application
+
+Now, let's create our client application with Angular CLI:
+
+    $ ng new client
+    $ cd client
+
+Great! So we have now an Angular 2 application, let's run it:
+
+    $ ng serve --open
+
+### Create your first Component
+
+Now let's create an Angular Component for a single list item, that displays the name of the GitHub user we are following.
+
+We can create Angular 2 Component using it's CLI, by running:
+
+    $ ng g component follow-list-item
+
+> Angular CLI creates a Component file, template file, CSS file and tests. It also adds it to your `NgModule` declaration file.
+
+So our new component is created under `client/app/follow-list-item/` directory, let's implement it:
+
+{{{ diffStep 3.3 files="client/src/app/follow-list-item/follow-list-item.component.html,client/src/app/follow-list-item/follow-list-item.component.ts" }}}
+
+### Implement the list of data
+
+Now let's create the list of followers, using the same angular CLI command:
+
+    $ ng g component follow-list
+
+And now we will implement the actual Component logic.
+
+We will use `Observable` as data source - Angular has a built in support for this kind of Iterables (you can read more [here](http://blog.angular-university.io/functional-reactive-programming-for-angular-2-developers-rxjs-and-observables/))
+
+Our `Observable` will have some static data, and we will connect it to our GraphQL server later.
+
+{{{ diffStep 3.5 files= "client/src/app/follow-list/follow-list.component.ts" }}}
+
+Now, let's modify the template of this component:
+
+{{{ diffStep 3.5 files= "client/src/app/follow-list/follow-list.component.html" }}}
+
+The template generates a simple list container (`ul` tag), with `app-follow-list-item` as our list items.
+
+We iterates over the `Observable` using `ngFor` (we use `async` pipe because we are using `Observable` - this way Angular 2 known to update our UI each time the data changes).
+
+Next, let's add our following list to the main app view (`app.component.html`):
+
+{{{ diffStep 3.6 }}}
+
+### Add GraphQL and Apollo-Client
+
+Now let's add our GraphQL client - Apollo.
+
+    $ yarn add apollo-client apollo-angular graphql-tag
+
+And let's create a new file, and declare our `ApolloClient` instance.
+
+We will also use `networkInterface` to tell ApolloClient where our GraphQL server.
+
+{{{ diffStep 3.8 }}}
+
+> We added `provideClient` because we will need a pure function later for `NgModule` declaration.
+
+Now let's add a the `apollo-angular` bridge that connects our Angular application to the ApolloClient instance:
+
+{{{ diffStep 3.9 }}}
+
+### Connect GraphQL to the Following List
+
+Now let's use GraphQL with Apollo to fetch some data from our server.
+
+To do so, we need to create GraphQL `Query`, and we need to modify our list component and use `Apollo` instead of static `Observable` implementation.
+
+Let's create our basic Query - we will fetch `me` fields and it's sub-fields: `id` and `following`, and for each following user we want to fetch it's login and name:
+
+{{{ diffStep "3.10" }}}
+
+Now let's replace the static `Observable` with real data, using the Query we just created.
+
+Apollo also support `Observable` so replacing the static one should be really simple!
+
+{{{ diffStep 3.11 files="client/src/app/follow-list/follow-list.component.ts" }}}
+
+We are using Angular's dependency injection to ask for `Apollo` instance - which is our `ApolloClient` wrapper for Angular.
+
+Next, we are using `watchQuery` with the Query we just created.
+
+We are using `rxjs` operator called `map` in order to change each value that our Query results emits, because the JSON structure is different from the one we used with the static `Observable`.
+
+Now, each value of the `Observable` will be the result of `me`: `id` (string) and `following` (array of users). But our `ngFor` iterates over the array of following, so we need to change the template to iterate over the correct field:
+
+{{{ diffStep 3.11 files="client/src/app/follow-list/follow-list.component.html" }}}
+
+> Note that we are using `(items$ | async)?.following` because we first want to map the `items$` observable, and then get the `following` array from the result. the `?` operator helps us to avoid iterating null values (while loading the data).
+
