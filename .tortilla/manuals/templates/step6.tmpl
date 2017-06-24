@@ -1,0 +1,18 @@
+Our last step of the tutorial is to add pagination (load more) feature to the list.
+
+So let's add the basics of pagination - we need an indication for the current page, the amount of items to load per page, and we need to add it to the GraphQL Query so we can pass these variables from the client to the server.
+
+Our GraphQL API can also tell us the total amount of items (called `followingCount`), so we will also add this field in our Query, and use it's value to show/hide the "load more" button.
+
+{{{ diffStep 6.1 }}}
+
+Now, all we have to do is to add a "load more" button to the template, that triggers a class method. And we also need to hide this button when there are no more items to load.
+
+Apollo-client API allows us to use our existing query and execute `fetchMore` with new variables, and then to get more data.
+
+We can also use the new data with a mechanism called `updateQuery` (the same as `updateQueries` we used in step 5) to patch the cache and append the new page of data.
+
+{{{ diffStep 6.2 }}}
+
+As you can see, we are using the Query result now for another use: subscribing to Query data changes and check `followingCount` every time the data changes, and update the class property `hasMoreToLoad` (which show/hide the "load more" button).
+
