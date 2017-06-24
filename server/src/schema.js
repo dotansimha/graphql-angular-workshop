@@ -29,6 +29,12 @@ const resolvers = {
       return githubConnector.getUserForLogin(user.login);
     }
   },
+  Mutation: {
+    follow(_, { login }, { githubConnector }) {
+      return githubConnector.follow(login)
+        .then(() => githubConnector.getUserForLogin(login))
+    },
+  },
   User: {
     following(user, { page, perPage }, { githubConnector }) {
       return githubConnector.getFollowingForLogin(user.login, page, perPage)
