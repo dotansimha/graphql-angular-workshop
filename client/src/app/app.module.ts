@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { FollowListItemComponent } from './follow-list-item/follow-list-item.component';
@@ -17,7 +18,8 @@ import { FollowUserFormComponent } from './follow-user-form/follow-user-form.com
   ],
   imports: [
     BrowserModule,
-    ApolloModule.forRoot(provideClient)
+    ApolloModule.forRoot(provideClient),
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
