@@ -4,6 +4,8 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { FollowListItemComponent } from './follow-list-item/follow-list-item.component';
 import { FollowListComponent } from './follow-list/follow-list.component';
+import { ApolloModule } from 'apollo-angular';
+import { provideClient } from './apollo/client';
 
 @NgModule({
   declarations: [
@@ -12,7 +14,8 @@ import { FollowListComponent } from './follow-list/follow-list.component';
     FollowListComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    ApolloModule.forRoot(provideClient)
   ],
   providers: [],
   bootstrap: [AppComponent]
