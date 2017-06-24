@@ -1,0 +1,106 @@
+So far we learned how to Query and fetch data from our GraphQL server, and in this step we will modify data using GraphQL Mutations.
+
+The mutation we will add is `follow` and it will add a GitHub users to own following list.
+
+We will first add it with a regular mutation behavior, and then we will update it to use optimistic response.
+
+### Implement Mutation
+
+So our schema already has `follow` mutation declared, and we just need to implement it and call our GitHub connector:
+
+{{{ diffStep 5.1 }}}
+
+### Add Angular Form
+
+We will add a form with a simple `<input />` tag for the GitHub username, and a simple button that triggers the actual mutation.
+
+So let's start with adding a new Component for the form:
+
+    $ ng g component follow-user-form
+
+And let's add it to the main HTML file:
+
+{{{ diffStep 5.3 }}}
+
+Now we are going to use Angular features that related to forms, so we need to add `@angular/forms`:
+
+    $ yarn add @angular/forms
+
+And import it into the `NgModule`:
+
+{{{ diffStep 5.4 files="client/src/app/app.module.ts" }}}
+
+The implementation of the actual form is simple - it's just an `<input />` tag with two-way-binding using `ngModel` of Angular, and a simple button that triggers an action in click:
+
+{{{ diffStep 5.5 }}}
+
+### Adding GraphQL Mutation to client-side
+
+Now let's create a GraphQL file for our mutation:
+
+{{{ diffStep 5.6 }}}
+
+> We are using GraphQL variable, called `$login`, and we will later fill this variable with the form data.
+
+Next, we need to implement `follow()` method using `Apollo`, so let's add it using Angular dependency injection, and use add to trigger our GraphQL mutation:
+
+{{{ diffStep 5.7 }}}
+
+We also created a class variable called `followResultMessage` and display it - this will be our temporary feedback for the action's success.
+
+### Optimistic Response
+
+At the moment, the user's feedback after adding sending the form is just a message that says that the user is now being followed by you.
+
+We can improve this behavior by adding optimistic response.
+
+Optimistic response is our way to predict the result of the server, and reflect it to the client immediately, and later replace it with the actual response from the server.
+
+This is a powerful feature that allows you to create good UI behavior and great experience.
+
+So our goal is to replace the simple "success" message, and add the new followed user into the following list.
+
+Apollo-client allows you to add `optimisticResponse` object to your Mutation definition, and we also need implement `updateQueries`.
+
+`updateQueries` is a mechanism that allows the developer to "patch" the Apollo-client cache, and update specific GraphQL requests with data - causing every Component that use these Queries to update.
+
+This is how we implemented `updateQueries` and `optimisticResponse` in our project:
+
+{{{ diffStep 5.8 }}}
+
+The `optimisticResponse` object must match and specify the exact GraphQL `type` that returns from the server requests, in a special field called `__typename` - this is how GraphQL identify each object.
+
+So in this case, we are returning a `Mutation` type that contains a fields called `follow` (this is the mutation itself), that contains a `User` type with the fields. We don't have all the fields to create a full UI prediction - but we do have the login - to let's use, and let's add `name` as empty string.
+
+So we know that object returned from the server, we just need to patch the cache data.
+
+The implementation of `updateQueries` is an Object, there the key is the GraphQL operation name of the Query we want to patch.
+
+The GraphQL operation name is the name that comes after the word `query ` in you Query definition, so in this case we want to patch `Me` Query, because this is where the `following` array comes from:
+
+```graphql
+query Me { /// <--- This is the GraphQL operation name
+    me {
+        id
+        following {
+            ...
+        }
+    }
+}
+```
+
+Next, the callback of `updateQueries` will get the current cache state, and the mutation result. This callback actually called twice now - the first time for our optimistic response, and the for actual mutation result.
+
+We take the current state, and patch it using a tool called `update` from the package `immutability-helper`, so we are taking the result object of the mutation, and `$push` it into the existing array of following users.
+
+Don't forget to add `immutability-helper` by running:
+
+    $ yarn add immutability-helper
+
+Next - let's do some minor UI change and display the GitHub login name instead of the GitHub name, when it's not available (because during the time between the optimistic response and the server response, we don't know the name of the user):
+
+{{{ diffStep "5.10" }}}
+
+Let's add another small change to the result handler - and check if the user exists in the list before adding it, so we won't have duplicates:
+
+{{{ diffStep 5.11 }}}
