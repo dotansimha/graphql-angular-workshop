@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Apollo } from 'apollo-angular';
+import update from 'immutability-helper';
 import { FollowMutation } from '../graphql/follow.mutation';
 
 @Component({
@@ -9,7 +10,6 @@ import { FollowMutation } from '../graphql/follow.mutation';
 })
 export class FollowUserFormComponent implements OnInit {
   private usernameToFollow: string = '';
-  private followResultMessage: string = '';
 
   constructor(private apollo: Apollo) {
   }
@@ -27,10 +27,29 @@ export class FollowUserFormComponent implements OnInit {
       variables: {
         login: this.usernameToFollow,
       },
-    }).subscribe(({ data: { follow } }) => {
-      const { name, login } = follow;
+      optimisticResponse: {
+        __typename: 'Mutation',
+        follow: {
+          __typename: 'User',
+          id: '',
+          name: '',
+          login: this.usernameToFollow,
+        },
+      },
+      updateQueries: {
+        Me: (prev, { mutationResult }: { mutationResult: any }) => {
+          const result = mutationResult.data.follow;
 
-      this.followResultMessage = `You are now following ${login}${name ? ` (${name})` : ''}!`;
+          return update(prev, {
+            me: {
+              following: {
+                $push: [result]
+              },
+            },
+          });
+        },
+      }
+    }).subscribe(() => {
       this.usernameToFollow = '';
     });
   }
